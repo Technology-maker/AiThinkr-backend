@@ -37,6 +37,4 @@ app.use('/api/v1/user', userRoutes);
 app.use('/api/v1/deepseekai', promptRouter);
 
 
-app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
-})
+export default app;
