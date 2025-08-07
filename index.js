@@ -23,7 +23,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 // db connection code  
-mongoose.connect(mongo_url).then(() => {
+mongoose.connect(mongo_url || "mongodb+srv://ys5401519:UPbvxvuU9k3BFqRP@cluster0.icotnww.mongodb.net/deepseek?retryWrites=true&w=majority&appName=Cluster0").then(() => {
     console.log("connected to Database");
 }).catch((err) => {
     console.error("mongodb connection error!");
