@@ -12,7 +12,7 @@ const mongo_url = process.env.MONGO_URI;
 
 // using cors for connected with frontend 
 app.use(cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    origin: process.env.FRONTEND_URL || "https://ai-thinkr-frontend.vercel.app",
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"]
