@@ -4,46 +4,37 @@ import jwt from 'jsonwebtoken';
 import config from '../config.js';
 
 export const signup = async (req, res) => {
+
+    // take all data frrom frontend or body
     const { firstname, lastname, email, password } = req.body;
-    console.log("Incoming signup:", firstname, lastname, email, password);
-
-    // 1️⃣ Validate input
-    if (!firstname || !lastname || !email || !password) {
-        return res.status(400).json({ error: "All fields are required" });
-    }
-
+    
     try {
-        // 2️⃣ Check if user already exists
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
-            return res.status(409).json({ error: "Email already exists" }); // 409 = Conflict
+        // check if user already exists
+        const user = await User.findOne({ email });
+        if (user) {
+            return res.status(400).json({ errors: "Email already exists" });
         }
-
-        // 3️⃣ Hash password
+        // hashing pasword  
         const hashedPassword = await bcrypt.hash(password, 10);
-
-        // 4️⃣ Save new user
         const newUser = new User({
             firstname,
             lastname,
             email,
             password: hashedPassword
         });
-
         await newUser.save();
         return res.status(201).json({ message: "User signup successfully" });
 
     } catch (error) {
-        console.error("Error in signup:", error);
-
-        // Handle duplicate key error from MongoDB
+        
+        console.error("Error in signup:", error.message);
         if (error.code === 11000) {
-            return res.status(409).json({ error: "Email already exists" });
+            return res.status(400).json({ error: "Email already exists" });
         }
 
         res.status(500).json({
             success: false,
-            error: "Internal Server Error"
+            error: error.message || "Internal Server Error"
         });
     }
 };
