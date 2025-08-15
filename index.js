@@ -10,9 +10,22 @@ const app = express()
 const port = process.env.PORT || 4001;
 const mongo_url = process.env.MONGO_URI;
 
+
+const allowedOrigins = [
+    "https://www.aithinkr.online",
+    "https://ai-thinkr-frontend.vercel.app",
+    "http://localhost:3000" // for local testing
+];
+
 // using cors for connected with frontend 
 app.use(cors({
-    origin: process.env.FRONTEND_URL || "hhttps://www.aithinkr.online",
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"]
