@@ -12,7 +12,7 @@ export const signup = async (req, res) => {
         // check if user already exists
         const user = await User.findOne({ email });
         if (user) {
-            return res.status(400).json({ errors: "User already exists" });
+            return res.status(400).json({ errors: "Email already exists" });
         }
         // hashing pasword  
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -26,7 +26,12 @@ export const signup = async (req, res) => {
         return res.status(201).json({ message: "User signup successfully" });
 
     } catch (error) {
+        
         console.error("Error in signup:", error.message);
+        if (error.code === 11000) {
+            return res.status(400).json({ error: "Email already exists" });
+        }
+
         res.status(500).json({
             success: false,
             error: error.message || "Internal Server Error"
