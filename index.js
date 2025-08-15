@@ -12,7 +12,7 @@ const mongo_url = process.env.MONGO_URI;
 
 // using cors for connected with frontend 
 app.use(cors({
-    origin: process.env.FRONTEND_URL || "https://ai-thinkr-frontend.vercel.app",
+    origin: process.env.FRONTEND_URL || "hhttps://www.aithinkr.online",
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"]
