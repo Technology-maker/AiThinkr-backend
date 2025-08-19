@@ -16,8 +16,10 @@ const mongo_url = process.env.MONGO_URI;
 // ✅ CORS setup
 const allowedOrigins = [
     "https://www.aithinkr.online",
-    "https://ai-thinkr-frontend.vercel.app",
-    "http://localhost:3000", // for local testing
+    "https://ai-thinkr-frontend.vercel.app", // frontend domain
+    "https://ai-thinkr.vercel.app",          // backend domain (optional if you call backend → backend)
+    "http://localhost:3000",                 // local React dev
+    "http://localhost:5173"                  // local Vite dev
 ];
 
 app.use(
