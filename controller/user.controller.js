@@ -50,45 +50,61 @@ export const signup = async (req, res) => {
 
 
 export const login = async (req, res) => {
-    const { email, password } = req.body;
     try {
+        const { email, password } = req.body;
 
-        // check if user exists in our database
+        // validate input
+        if (!email || !password) {
+            return res.status(400).json({ error: "Email and password are required" });
+        }
+
+        // check if user exists
         const user = await User.findOne({ email });
-
-        // if user not found is invalid
         if (!user) {
-            return res.status(403).json({ errors: "Invalid email or password" });
+            return res.status(403).json({ error: "Invalid email or password Please check again !" });
         }
 
-        // check if pasword is mach correctly
+        // check password
         const isPasswordValid = await bcrypt.compare(password, user.password);
-        // if pasword not found 
         if (!isPasswordValid) {
-            return res.status(403).json({ errors: "Invalid email or password" });
+            return res.status(403).json({ error: "Invalid email or password Please check again !" });
         }
 
-        // token generate when user is valid 
-        const token = jwt.sign({ id: user._id }, config.JWT_USER_PASSWORD, { expiresIn: '5d' });
+        // generate JWT token
+        const token = jwt.sign(
+            { id: user._id, email: user.email },
+            config.JWT_USER_PASSWORD,
+            { expiresIn: "5d" }
+        );
 
+        // cookie options
         const cookieOptions = {
-            expires: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5 days in milliseconds
-            httpOnly: true, // optional: makes cookie accessible only by web server
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'Strict' // optional: helps prevent CSRF attacks
+            expires: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5 days
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "Strict",
         };
-        res.cookie("jWT", token, cookieOptions);
 
-        // if user found and password is valid
-        return res.status(200).json({ message: "User logged in successfully", user, token });
+        res.cookie("jwt", token, cookieOptions);
 
-        // some error  
+        // remove password before sending response
+        const { password: _, ...userWithoutPassword } = user.toObject();
+
+        return res.status(200).json({
+            message: "User logged in successfully",
+            user: userWithoutPassword,
+            token,
+        });
+
     } catch (error) {
-        console.error("Error in login:", error);
-        res.status(500).send("Internal Server Error", error.message);
-        return;
+        console.error("❌ Error in login:", error);
+        return res.status(500).json({
+            error: "Internal Server Error",
+            details: error.message,
+        });
     }
-}
+};
+
 
 export const logout = (req, res) => {
     try {
