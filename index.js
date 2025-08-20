@@ -10,7 +10,7 @@ import promptRouter from "./routes/prompt.routes.js";
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 4001;
+const port = process.env.PORT || 5000;
 const mongo_url = process.env.MONGO_URI;
 
 // ✅ CORS setup
@@ -36,6 +36,8 @@ app.use(
         allowedHeaders: ["Content-Type", "Authorization"],
     })
 );
+
+
 app.get("/", (req, res) => {
     res.send("Backend is running !");
 })
@@ -68,7 +70,7 @@ const connectDBAndStart = async () => {
         });
     } catch (error) {
         console.error("❌ MongoDB connection error:", error.message);
-        process.exit(1); // Stop app if DB fails
+        process.exit(1);
     }
 };
 

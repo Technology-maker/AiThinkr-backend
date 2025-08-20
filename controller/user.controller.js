@@ -4,30 +4,38 @@ import jwt from 'jsonwebtoken';
 import config from '../config.js';
 
 export const signup = async (req, res) => {
-
-    // take all data frrom frontend or body
-    const { firstname, lastname, email, password } = req.body;
-    
     try {
-        // check if user already exists
+        const { firstname, lastname, email, password } = req.body;
+
+        // Check all required fields
+        if (!firstname || !lastname || !email || !password) {
+            return res.status(400).json({
+                error: "All fields (firstname, lastname, email, password) are required"
+            });
+        }
+
+        // Check if user exists
         const user = await User.findOne({ email });
         if (user) {
-            return res.status(400).json({ errors: "Email already exists" });
+            return res.status(400).json({ error: "Email already exists" });
         }
-        // hashing pasword  
+
+        // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
+
         const newUser = new User({
             firstname,
             lastname,
             email,
             password: hashedPassword
         });
-        await newUser.save();
-        return res.status(201).json({ message: "User signup successfully" });
 
+        await newUser.save();
+
+        return res.status(201).json({ message: "User signup successfully" });
     } catch (error) {
-        
-        console.error("Error in signup:", error.message);
+        console.error("❌ Error in signup:", error);
+
         if (error.code === 11000) {
             return res.status(400).json({ error: "Email already exists" });
         }
@@ -38,6 +46,7 @@ export const signup = async (req, res) => {
         });
     }
 };
+
 
 
 export const login = async (req, res) => {
